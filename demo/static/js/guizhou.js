@@ -2,7 +2,6 @@
 var chart = echarts.init(document.getElementById('main'));
 
 //直辖市和特别行政区-只有二级地图，没有三级地图
-var special = ["北京", "天津", "上海", "重庆", "香港", "澳门"];
 var mapdata = [];
 //绘制全国地图
 $.getJSON('static/map/province/guizhou.json', function (data) {
@@ -10,7 +9,7 @@ $.getJSON('static/map/province/guizhou.json', function (data) {
     for (var i = 0; i < data.features.length; i++) {
         d.push({
             name: data.features[i].properties.name,
-            value: 111
+            value: "111"
         })
     }
     mapdata = d;
@@ -25,25 +24,21 @@ chart.on('click', function (params) {
     console.log(params);
 
     //如果是【直辖市/特别行政区】只有二级下钻
-    if (special.indexOf(params.seriesName) >= 0) {
-        renderMap('guizhou', mapdata);
+    if (cityMap[params.name] != undefined) {
+        //显示县级地图
+        $.getJSON('static/map/city/' + cityMap[params.name] + '.json', function (data) {
+            echarts.registerMap(params.name, data);
+            var d = [];
+            for (var i = 0; i < data.features.length; i++) {
+                d.push({
+                    name: data.features[i].properties.name,
+                    value: 111
+                })
+            }
+            renderMap(params.name, d);
+        });
     } else {
-        if (cityMap[params.name] != undefined) {
-            //显示县级地图
-            $.getJSON('static/map/city/' + cityMap[params.name] + '.json', function (data) {
-                echarts.registerMap(params.name, data);
-                var d = [];
-                for (var i = 0; i < data.features.length; i++) {
-                    d.push({
-                        name: data.features[i].properties.name,
-                        value: 111
-                    })
-                }
-                renderMap(params.name, d);
-            });
-        } else {
-            renderMap('guizhou', mapdata);
-        }
+        renderMap('guizhou', mapdata);
     }
 });
 
@@ -70,7 +65,13 @@ var option = {
     },
     tooltip: {
         trigger: 'item',
-        formatter: '{b}'
+        showDelay: 0,
+        transitionDuration: 0.2,
+        formatter: function (params) {
+            var value = (params.value + '').split('.');
+            value = value[0].replace(/(\d{1,3})(?=(?:\d{3})+(?!\d))/g, '$1,');
+            return params.seriesName + '<br/>' + params.name + ': ' + value;
+        }
     },
     toolbox: {
         show: true,
