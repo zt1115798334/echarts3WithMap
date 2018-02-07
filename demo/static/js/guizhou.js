@@ -1,3 +1,7 @@
+function randomData() {
+    return Math.round(Math.random() * 1000);
+}
+
 //地图容器
 var chart = echarts.init(document.getElementById('main'));
 
@@ -9,7 +13,8 @@ $.getJSON('static/map/province/guizhou.json', function (data) {
     for (var i = 0; i < data.features.length; i++) {
         d.push({
             name: data.features[i].properties.name,
-            value: "111"
+            value: [randomData(), 222]
+
         })
     }
     mapdata = d;
@@ -32,7 +37,7 @@ chart.on('click', function (params) {
             for (var i = 0; i < data.features.length; i++) {
                 d.push({
                     name: data.features[i].properties.name,
-                    value: 111
+                    value: [randomData(), 222]
                 })
             }
             renderMap(params.name, d);
@@ -70,7 +75,8 @@ var option = {
         formatter: function (params) {
             var value = (params.value + '').split('.');
             value = value[0].replace(/(\d{1,3})(?=(?:\d{3})+(?!\d))/g, '$1,');
-            return params.seriesName + '<br/>' + params.name + ': ' + value;
+            value2 = value[0].replace(/(\d{1,3})(?=(?:\d{3})+(?!\d))/g, '$1,');
+            return params.seriesName + '<br/>' + params.name + ': ' + value + ":" + value2;
         }
     },
     toolbox: {
