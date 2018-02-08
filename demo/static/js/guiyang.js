@@ -9,7 +9,9 @@ var chart = echarts.init(document.getElementById('main'));
 var mapdata = [];
 //绘制全国地图
 var name = "贵阳市";
-$.getJSON('static/map/city/' + cityMap[name] + '.json', function (data) {
+var cityCode = cityMap[name];
+console.log(cityCode);
+$.getJSON('static/map/city/520100.json', function (data) {
     d = [];
     for (var i = 0; i < data.features.length; i++) {
         d.push({
